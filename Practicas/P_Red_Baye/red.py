@@ -33,16 +33,17 @@ def crear_red_bayesiana():
         valores = int(input(f"¿Cuántos valores tiene el nodo '{nodo}'? (por ejemplo, 2 para Sí/No): "))
 
         # Crear una tabla de probabilidad condicional
+        
         if padres:
             print(f"Para el nodo '{nodo}', con padres {padres}:")
             entradas = []
-            for i in range(valores ** len(padres)):
-                prob = list(map(float, input(f"Probabilidad para el caso {i + 1} (en formato separado por espacios): ").split()))
-                entradas.extend(prob)
-            cpd = TabularCPD(variable=nodo, variable_card=valores, values=[entradas], evidence=padres, evidence_card=[valores] * len(padres))
+            for i in range(valores):
+                prob = list(map(float, input(f"Probabilidades para el valor {i} de '{nodo}' (separadas por espacios): ").split()))
+                entradas.append(prob)
+            cpd = TabularCPD(variable=nodo, variable_card=valores, values=entradas, evidence=padres, evidence_card=[valores] * len(padres))
         else:
             prob = list(map(float, input(f"Probabilidades de '{nodo}' (separadas por espacios): ").split()))
-            cpd = TabularCPD(variable=nodo, variable_card=valores, values=[prob])
+            cpd = TabularCPD(variable=nodo, variable_card=valores, values=[[p] for p in prob])
 
         cpds.append(cpd)
 
