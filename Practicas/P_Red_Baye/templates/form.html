@@ -10,26 +10,60 @@
     <div class="container">
         <h1>Calculadora del Teorema de Bayes</h1>
         <form method="POST">
-            <label for="prior_H">Probabilidad inicial (P(H)): </label>
-            <input type="number" id="prior_H" name="prior_H" step="0.01" min="0" max="1" required>
+            <!-- Primer paso: datos iniciales -->
+            {% if step == "initial" %}
+                <label for="prior_H">Probabilidad inicial (P(H)): </label>
+                <input type="number" id="prior_H" name="prior_H" step="0.01" min="0" max="1" required>
 
-            <label for="likelihood_E_given_H">P(E|H): </label>
-            <input type="number" id="likelihood_E_given_H" name="likelihood_E_given_H" step="0.01" min="0" max="1" required>
+                <label for="likelihood_E_given_H">P(E|H): </label>
+                <input type="number" id="likelihood_E_given_H" name="likelihood_E_given_H" step="0.01" min="0" max="1" required>
 
-            <label for="likelihood_E_given_not_H">P(E|¬H): </label>
-            <input type="number" id="likelihood_E_given_not_H" name="likelihood_E_given_not_H" step="0.01" min="0" max="1" required>
+                <label for="likelihood_E_given_not_H">P(E|¬H): </label>
+                <input type="number" id="likelihood_E_given_not_H" name="likelihood_E_given_not_H" step="0.01" min="0" max="1" required>
 
-            <label>
-                <input type="checkbox" id="add-evidence">
-                Agregar más evidencia
-            </label>
+                <input type="hidden" name="step" value="initial">
+                <button type="submit">Calcular</button>
 
-            <button type="submit">Calcular</button>
+            <!-- Segundo paso: agregar evidencia adicional -->
+            {% elif step == "next" %}
+                <h2>Resultado actual</h2>
+                <p>Posterior actual: P(H|E) = {{ posterior|round(4) }}</p>
+                <h3>¿Deseas agregar más evidencia?</h3>
+
+                <label for="extra_likelihood_E_given_H">P(E adicional|H): </label>
+                <input type="number" id="extra_likelihood_E_given_H" name="extra_likelihood_E_given_H" step="0.01" min="0" max="1">
+
+                <label for="extra_likelihood_E_given_not_H">P(E adicional|¬H): </label>
+                <input type="number" id="extra_likelihood_E_given_not_H" name="extra_likelihood_E_given_not_H" step="0.01" min="0" max="1">
+
+                <input type="hidden" name="step" value="next">
+                <input type="hidden" name="current_posterior" value="{{ posterior }}">
+                <input type="hidden" name="evidence_num" value="{{ iterations|length }}">
+                <input type="hidden" name="iterations" value="{{ iterations }}">
+
+                <button type="submit">Agregar evidencia</button>
+                <a href="/">Finalizar</a>
+            {% endif %}
         </form>
 
-        {% if posterior %}
-            <h2>Resultado: P(H|E) = {{ posterior|round(4) }}</h2>
+        <!-- Mostrar iteraciones de las evidencias -->
+        {% if iterations %}
+            <h2>Resultados de las Iteraciones</h2>
+            <ul>
+                {% for iteration in iterations %}
+                    <li>
+                        <strong>Evidencia {{ iteration.evidence }}:</strong><br>
+                        Prior: P(H) = {{ iteration.prior|round(4) }}<br>
+                        Posterior: P(H|E{{ iteration.evidence }}) = {{ iteration.posterior|round(4) }}
+                    </li>
+                {% endfor %}
+            </ul>
         {% endif %}
 
-        {% if probabilities_graph %}
-            <iframe src="{{ probabilities_graph }}" width="1
+        <!-- Mostrar mensaje de error si existe -->
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>
