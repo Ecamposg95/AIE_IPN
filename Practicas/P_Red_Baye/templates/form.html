@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora del Teorema de Bayes</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora del Teorema de Bayes</h1>
+        <form method="POST">
+            <label for="prior_H">Probabilidad inicial (P(H)): </label>
+            <input type="number" id="prior_H" name="prior_H" step="0.01" min="0" max="1" required>
+
+            <label for="likelihood_E_given_H">P(E|H): </label>
+            <input type="number" id="likelihood_E_given_H" name="likelihood_E_given_H" step="0.01" min="0" max="1" required>
+
+            <label for="likelihood_E_given_not_H">P(E|¬H): </label>
+            <input type="number" id="likelihood_E_given_not_H" name="likelihood_E_given_not_H" step="0.01" min="0" max="1" required>
+
+            <label>
+                <input type="checkbox" id="add-evidence">
+                Agregar más evidencia
+            </label>
+
+            <button type="submit">Calcular</button>
+        </form>
+
+        {% if posterior %}
+            <h2>Resultado: P(H|E) = {{ posterior|round(4) }}</h2>
+        {% endif %}
+
+        {% if probabilities_graph %}
+            <iframe src="{{ probabilities_graph }}" width="1
